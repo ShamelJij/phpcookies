@@ -1,36 +1,36 @@
 <html>
 <head>
-
+<style>
+table, th, td{
+	border: 1px dashed blue;
+}
+</style>
 </head>
 <body>
 <?php
-	$zahl1 = rand(20, 100);
-	$zahl2 = rand(20, 100);
-$rechenzeichen = "+";
-$ergebnis = $zahl1 + $zahl2;
-$r = rand(0,2);
-if($r == 1){
-	$rechenzeichen = "-";
-	$ergebnis = $zahl1 - $zahl2;
-}elseif($r == 2){
-	$rechenzeichen = "*";
-	$ergebnis = $zahl1 * $zahl2;
+$conn = new mysqli('localhost', 'root', 'sqlubuntu', 'autohaus'); 
+if($conn->connect_error){
+	die('Verbindung fehlgeschlagen: ' . $conn->connect_error);
 }
-echo "<h2>" , $zahl1 , " " ,$rechenzeichen, " ", $zahl2, "=?</h2>";
-$array = array($ergebnis, round($ergebnis * rand(800, 1200)*0.001), round($ergebnis * rand(800, 1200)*0.001));
-shuffle($array);
-for($i = 0; $i<3; $i++){
-echo "<form action='ergebnis.php' method='post'>",
-	"<input type='hidden' value=", $ergebnis, " name='ergebnis'>",
-	"<button name='antwort' value=" , $array[$i] ,">", $array[$i], "</button>",
-	"</form>";
+$sql = "SELECT * FROM autos, marke WHERE marke = markenid";
+$ausgabe = $conn->query($sql);
+if($ausgabe->num_rows>0){
+	echo "<table>";
+	echo "<tr><th>ID</th><th>Marke</th><th>Baujahr</th><th>Farbe</th></tr>";
+	while($row = $ausgabe->fetch_assoc()){
+		echo "<tr>";
+		echo "<td>" . $row ["id"] . "</td>";	
+		echo "<td>" . $row ["markenBezeichnung"] . "</td>";
+		echo "<td>" . $row ["farbe"] . "</td>";
+		echo "<td>" . $row ["baujahr"] . "</td>";
+		echo "</tr>";
+	}
+	echo "</table>";
+}else{
+	echo "Fehler: ". $conn->error;
 }
-echo "<br>";
-echo "richtig: ", $_COOKIE["richtig"], "<br>";
-echo "falsch: ", $_COOKIE["falsch"], "<br>";
-
+$conn->close();
 ?>
-<form>
 
 </body>
 </html>
